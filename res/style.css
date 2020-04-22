@@ -1,0 +1,70 @@
+* {
+	font-family: monospace;
+	font-size: 105%
+}
+
+body {
+	background-color: #000;
+	color: #fff;
+	width: 60%;
+	margin: 0 auto;
+	padding: 0
+}
+
+/* Navigation */
+ul#navbar {
+	margin: 0;
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+ul#navbar li {
+	display: inline-block;
+	padding: 1em
+}
+
+/* Content */
+div#content {
+	padding: 0
+}
+
+/* Link style */
+a {
+	color: #ab0;
+	text-decoration: none;
+	cursor: pointer
+}
+
+a:hover {
+	text-decoration: underline
+}
+
+/* Headings */
+h1 {
+	font-size: 180%
+}
+
+/*ul li {
+	padding: 0.1em;
+}*/
+
+/*h2 {
+	font-size: 180%
+}
+
+div {
+	width: 70%;
+}
+
+h3 {
+	margin: 0;
+	font-size: 130%
+}
+
+h4 {
+	margin: 0;
+	font-size: 100%;
+	font-weight: normal;
+	font-style: italic
+}
+*/

@@ -1,0 +1,2 @@
+# Don't upload un-obfuscated e-mail hider
+res/email_orig.js
