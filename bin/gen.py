@@ -1,8 +1,16 @@
 #!/usr/bin/python3
 # Blog generator script
 
-GEN_TEMPLATE = "template"
-GEN_PAGES    = [ "index", "projects", "writeups" ]
+# List of pages
+GEN_PAGES = [ "index", "projects", "writeups" ]
+
+# Read in templates
+def read_file(name):
+	with open(name) as f:
+		return f.read()
+
+template_page = read_file("src/templates/page.html")
+template_nav  = read_file("src/templates/nav.html")
 
 import configparser
 import formatter
@@ -25,9 +33,15 @@ def template_gen(template, subs):
 		result = result.replace("{%s}" %k, subs[k])
 	return formatter.format_html(result)
 
-# Read template
-with open("src/%s.html" %GEN_TEMPLATE) as f:
-	template = f.read()
+# Generate navbar
+navbar = []
+for page in GEN_PAGES:
+	subs = {
+		"GEN_HREF": "%s.html" %page,
+		"GEN_LINK": page
+	}
+	navbar.append(template_gen(template_nav, subs))
+navbar = ''.join(navbar)
 
 # Generate pages
 for page in GEN_PAGES:
@@ -40,7 +54,8 @@ for page in GEN_PAGES:
 		continue
 
 	subs = parse_metadata(metadata.group(1))
+	subs["GEN_NAVBAR"] = navbar
 	subs["GEN_CONTENT"] = md_to_page(page_md)
 
 	with open("%s.html" %page, "w") as f:
-		f.write(template_gen(template, subs))
+		f.write(template_gen(template_page, subs))

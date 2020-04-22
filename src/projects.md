@@ -7,7 +7,7 @@ GEN_COPYRIGHT=Copyright (C) Máté Kukri, 2020
 -->
 # Projects
 
-Selection of my hobby software(/hardware) projects. Projects listed here
+Selection of my hobby software/hardware projects. Projects listed here
 are mostly complete, and accomplish the main task they were designed to do.
 For work-in-progress projects, see my GitHub profile.
 
