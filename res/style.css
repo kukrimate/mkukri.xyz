@@ -23,11 +23,6 @@ ul#navbar li {
 	padding: 1em
 }
 
-/* Content */
-div#content {
-	padding: 0
-}
-
 /* Link style */
 a {
 	color: #ab0;
@@ -44,27 +39,27 @@ h1 {
 	font-size: 180%
 }
 
-/*ul li {
-	padding: 0.1em;
-}*/
-
-/*h2 {
-	font-size: 180%
+/* Blog feed */
+div#post {
+	padding: 1em
 }
 
-div {
-	width: 70%;
+div#post_title {
+	font-size: 120%;
+	font-weight: bold;
+	margin-bottom: 1em
 }
 
-h3 {
-	margin: 0;
-	font-size: 130%
+div#post_timestamp {
+	margin-bottom: 0.5em
 }
 
-h4 {
-	margin: 0;
-	font-size: 100%;
-	font-weight: normal;
-	font-style: italic
+/* Code tags */
+code {
+	background: #444
 }
-*/
+
+pre {
+	background: #444;
+	padding: 0.5em
+}

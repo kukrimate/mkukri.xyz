@@ -6,6 +6,7 @@ GEN_AUTHOR=Máté Kukri
 GEN_COPYRIGHT=Copyright (C) Máté Kukri, 2020
 -->
 # About
+
 * My name is Máté Kukri, I am:
 	* studying Computing Science (BSc '23) at the University of Glasgow;
 	* interested in software development and cybersecurity.

