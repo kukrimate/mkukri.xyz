@@ -13,7 +13,6 @@ template_page = read_file("src/templates/page.html")
 template_nav  = read_file("src/templates/nav.html")
 
 import configparser
-import formatter
 import markdown
 import re
 import sys
@@ -31,7 +30,7 @@ def template_gen(template, subs):
 	result = template
 	for k in subs:
 		result = result.replace("{%s}" %k, subs[k])
-	return formatter.format_html(result)
+	return ''.join(map(lambda x: x.strip(), result.split('\n')))
 
 # Generate navbar
 navbar = []
