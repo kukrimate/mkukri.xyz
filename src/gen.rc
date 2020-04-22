@@ -1,6 +1,0 @@
-#
-# Blog generator configuration
-#
-
-# Static pages
-GEN_STATIC="index projects writeups"

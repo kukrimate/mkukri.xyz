@@ -1,8 +1,10 @@
-GEN_TITLE="Projects"
-GEN_DESCRIPTION=$GEN_TITLE
-GEN_KEYWORDS=""
-GEN_AUTHOR="Máté Kukri"
-###
+<!--GEN_META
+GEN_TITLE=Projects
+GEN_DESCRIPTION=Projects
+GEN_KEYWORDS=
+GEN_AUTHOR=Máté Kukri
+GEN_COPYRIGHT=Copyright (C) Máté Kukri, 2020
+-->
 # Projects
 
 Selection of my hobby software(/hardware) projects. Projects listed here
@@ -22,7 +24,7 @@ For work-in-progress projects, see my GitHub profile.
 * (U)EFI development library and boot manager:
 	<a href="https://github.com/kukrimate/libefiutil">libefiutil</a>
 	<a href="https://github.com/kukrimate/yaub">yaub</a>
-* SHA1 implementation in x86_64 assembly:
-	<a href="https://github.com/kukrimate/sha_asm">sha_asm</a>
+* SHA1 implementation in x86\_64 assembly:
+	<a href="https://github.com/kukrimate/sha_asm">sha\_asm</a>
 * This website:
 	<a href="https://github.com/kukrimate/mkukri.xyz">mkukri.xyz</a>
