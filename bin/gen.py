@@ -1,11 +1,8 @@
 #!/usr/bin/python3
 # Blog generator script
 
-# Blog feeds
-feeds = [ "blog", "writeups" ]
-
 # Pages (determines navbar order)
-pages = [ "about", "blog", "projects", "writeups" ]
+pages = [ "about", "blog", "projects" ]
 
 # Index page
 index = "about"
@@ -15,25 +12,33 @@ def read_file(name):
 	with open(name) as f:
 		return f.read()
 
+# Page templates
 template_nav  = read_file("src/templates/nav.html")
 template_page = read_file("src/templates/page.html")
-template_post = read_file("src/templates/post.html")
-template_single = read_file("src/templates/single.html")
+
+# Post templates
+template_post_small = read_file("src/templates/post_small.html")
+template_post_single= read_file("src/templates/post_single.html")
 
 import configparser
+import datetime
 import markdown
 import os
 import re
 
-def parse_metadata(s):
+# Get metadata from a md file
+def md_meta(s):
+	meta = re.match("\\<!--GEN_META([\\s\\S]*)--\\>", s).group(1)
 	parser = configparser.ConfigParser()
 	parser.optionxform = str
-	parser.read_string("[CONFIGPARSER_IS_CRAP]\n%s" %s)
+	parser.read_string("[CONFIGPARSER_IS_CRAP]\n%s" %meta)
 	return dict(parser["CONFIGPARSER_IS_CRAP"])
 
-def md_to_page(s):
+# Get content from a md file
+def md_content(s):
 	return markdown.markdown(re.sub("\\<!--[\\s\\S]*--\\>", "", s))
 
+# Generate a page from a template and substitutions
 def template_gen(template, subs):
 	result = template
 	for k in subs:
@@ -54,58 +59,49 @@ for page in pages:
 navbar = ''.join(navbar)
 
 #
-# Generate posts for feeds
+# Generate posts
 #
-for feed in feeds:
-	if not os.path.isdir(feed):
-		os.mkdir(feed)
 
-	feed_content = ""
+def single_filename(timestamp, name):
+	date = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
+	return date.strftime('%Y/%m/%d') + '/%s.html' %name
 
-	for post in os.listdir("src/%s" %feed):
-		with open("src/%s/%s" %(feed, post)) as f:
-			post_md = f.read()
+posts = []
 
-		post_meta = re.match("\\<!--GEN_META([\\s\\S]*)--\\>", post_md)
-		subs = parse_metadata(post_meta.group(1))
-		subs["GEN_NAVBAR"] = navbar
-		subs["GEN_CONTENT"] = md_to_page(post_md)
+for post in os.listdir("src/posts"):
+	post = os.path.splitext(post)[0]
 
-		single_filename = "%s/%s.html" %(feed, os.path.splitext(post)[0])
-		subs["GEN_MORE_HREF"] = single_filename
-		with open(single_filename, "w") as f:
-			f.write(template_gen(template_single, subs))
+	with open("src/posts/%s.md" %post) as f:
+		post_md = f.read()
 
-		feed_content += template_gen(template_post, subs)
+	subs = md_meta(post_md)
+	subs["GEN_NAVBAR"] = navbar
+	subs["GEN_CONTENT"] = md_content(post_md)
+	path = single_filename(subs["GEN_TIMESTAMP"], post)
+	subs["GEN_MORE_HREF"] = path
 
-	subs = {
-		"GEN_TITLE": "%s feed" %feed,
-		"GEN_DESCRIPTION": "blog posts in feed %s" %feed,
-		"GEN_KEYWORDS": "personal,blog,%s" %feed,
-		"GEN_AUTHOR": "Máté Kukri",
-		"GEN_NAVBAR": navbar,
-		"GEN_CONTENT": "<h1>%s</h1>" %(feed.title()) + feed_content
-	}
+	# Generate single post
+	os.makedirs(os.path.dirname(path), exist_ok=True)
+	with open(path, "w") as f:
+		f.write(template_gen(template_post_single, subs))
 
-	if index == feed:
-		feed = "index"
-	with open("%s.html" %feed, 'w') as f:
-		f.write(template_gen(template_page, subs))
+	# Generate small post
+	posts.append(template_gen(template_post_small, subs))
+
+posts = ''.join(posts)
 
 #
-# Generate static pages
+# Generate pages
 #
 for page in pages:
-	if page in feeds:
-		continue
-
 	with open("src/%s.md" %page) as f:
 		page_md = f.read()
 
-	metadata = re.match("\\<!--GEN_META([\\s\\S]*)--\\>", page_md)
-	subs = parse_metadata(metadata.group(1))
+	subs = md_meta(page_md)
 	subs["GEN_NAVBAR"] = navbar
-	subs["GEN_CONTENT"] = md_to_page(page_md)
+	subs["GEN_CONTENT"] = md_content(page_md)
+	if page == "blog":
+		subs["GEN_CONTENT"] += posts
 
 	if index == page:
 		page = "index"

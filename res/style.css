@@ -36,13 +36,12 @@ a:hover {
 
 /* Headings */
 h1 {
-	font-size: 180%
+	font-size: 180%;
+	text-decoration: underline
 }
 
 /* Blog feed */
-div#post {
-	padding: 1em
-}
+div#post {}
 
 div#post_title {
 	font-size: 120%;
