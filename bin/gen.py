@@ -62,8 +62,11 @@ navbar = ''.join(navbar)
 # Generate posts
 #
 
+def post_date(timestamp):
+	return datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
+
 def single_filename(timestamp, name):
-	date = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
+	date = post_date(timestamp)
 	return date.strftime('%Y/%m/%d') + '/%s.html' %name
 
 posts = []
@@ -86,9 +89,11 @@ for post in os.listdir("src/posts"):
 		f.write(template_gen(template_post_single, subs))
 
 	# Generate small post
-	posts.append(template_gen(template_post_small, subs))
+	posts.append((post_date(subs["GEN_TIMESTAMP"]),
+				template_gen(template_post_small, subs)))
 
-posts = ''.join(posts)
+posts.sort(key=lambda x: x[0], reverse=True)
+posts = ''.join(map(lambda x: x[1], posts))
 
 #
 # Generate pages

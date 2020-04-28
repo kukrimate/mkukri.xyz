@@ -41,7 +41,9 @@ h1 {
 }
 
 /* Blog feed */
-div#post {}
+div#post {
+	margin-bottom: 2em;
+}
 
 div#post_title {
 	font-size: 120%;
