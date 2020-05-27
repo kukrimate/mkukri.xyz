@@ -7,24 +7,30 @@ GEN_COPYRIGHT=Copyright (C) Máté Kukri, 2020
 -->
 # Projects
 
-Selection of my hobby software/hardware projects. Projects listed here
-are mostly complete, and accomplish the main task they were designed to do.
-For work-in-progress projects, see my GitHub profile.
+Some of my projects from the last few years:
 
-* Multi-threaded web fuzzer in C:
-	<a href="https://github.com/kukrimate/tnt">tnt</a>
-* Windows 10 install media creator in C for Unix:
-	<a href="https://github.com/kukrimate/tentoolkit">tentoolkit</a>
-* MCP2210 SPI Flasher:
-	<a href="https://github.com/kukrimate/spi_flasher">spi_flasher</a>
-	<a href="https://github.com/kukrimate/libmcp">libmcp</a>
-	<a href="https://github.com/kukrimate/flashrom">flashrom</a>
-* GRUB2 image builder for coreboot:
-	<a href="https://github.com/kukrimate/cb_grub">cb_grub</a>
-* (U)EFI development library and boot manager:
-	<a href="https://github.com/kukrimate/libefiutil">libefiutil</a>
-	<a href="https://github.com/kukrimate/yaub">yaub</a>
-* SHA1 implementation in x86\_64 assembly:
-	<a href="https://github.com/kukrimate/sha_asm">sha\_asm</a>
-* This website:
-	<a href="https://github.com/kukrimate/mkukri.xyz">mkukri.xyz</a>
+## Python
+* <a href="https://github.com/kukrimate/mkukri.xyz">mkukri.xyz</a>:
+Website generator used for generating this website
+
+## Java
+* <a href="https://github.com/kukrimate/SwingGraph">SwingGraph</a>:
+Library for building graphs out of Swing component
+
+## C
+
+* <a href="https://github.com/kukrimate/tnt">tnt</a>:
+Web directory discovery tool with multi-threading support
+* <a href="https://github.com/gusecurity/termsploit">termsploit</a>:
+C Library with optional Python bindings for exploiting interactive programs
+* <a href="https://github.com/kukrimate/s16emu">s16emu</a>:
+Emulator and assembler for the <a href="https://jtod.github.io/home/Sigma16/">
+Sigma16</a> processor architecture
+
+## x86_64 assembly
+* <a href="https://github.com/kukrimate/sha_asm">sha\_asm</a>:
+Semi-optimized SHA1 implementation
+* <a href="https://github.com/kukrimate/bfint">bfint</a>:
+Interpreter for the <a href="https://esolangs.org/wiki/Brainfuck">Brainfuck</a>
+esoteric programming language
+
