@@ -2,10 +2,10 @@
 # Blog generator script
 
 # Pages (determines navbar order)
-pages = [ "about", "blog", "projects" ]
+pages = [ "blog", "about", "projects" ]
 
 # Index page
-index = "about"
+index = "blog"
 
 # Read in templates
 def read_file(name):
