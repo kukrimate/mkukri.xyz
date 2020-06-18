@@ -2,7 +2,12 @@
 # Blog generator script
 
 # Pages (determines navbar order)
-pages = [ "blog", "about", "projects" ]
+pages = [ "blog", "about", "projects", "git" ]
+
+# External links
+external = {
+	"git": "http://git.mkukri.xyz"
+}
 
 # Index page
 index = "blog"
@@ -50,11 +55,17 @@ def template_gen(template, subs):
 #
 navbar = []
 for page in pages:
-	href = page if page != index else "index"
-	subs = {
-		"GEN_HREF": "/%s.html" %href,
-		"GEN_LINK": page
-	}
+	if page in external:
+		subs = {
+			"GEN_HREF": external[page],
+			"GEN_LINK": page
+		}
+	else:
+		href = page if page != index else "index"
+		subs = {
+			"GEN_HREF": "/%s.html" %href,
+			"GEN_LINK": page
+		}
 	navbar.append(template_gen(template_nav, subs))
 navbar = ''.join(navbar)
 
@@ -99,6 +110,9 @@ posts = ''.join(map(lambda x: x[1], posts))
 # Generate pages
 #
 for page in pages:
+	if page in external:
+		continue
+
 	with open("src/%s.md" %page) as f:
 		page_md = f.read()
 
