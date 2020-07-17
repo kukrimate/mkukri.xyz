@@ -10,27 +10,27 @@ GEN_COPYRIGHT=Copyright (C) Máté Kukri, 2020
 Some of my projects from the last few years:
 
 ## Python
-* <a href="https://github.com/kukrimate/mkukri.xyz">mkukri.xyz</a>:
+* <a href="http://git.mkukri.xyz/mkukri.xyz">mkukri.xyz</a>:
 Website generator used for generating this website
 
 ## Java
-* <a href="https://github.com/kukrimate/SwingGraph">SwingGraph</a>:
+* <a href="http://git.mkukri.xyz/SwingGraph">SwingGraph</a>:
 Library for building graphs out of Swing component
 
 ## C
 
-* <a href="https://github.com/kukrimate/tnt">tnt</a>:
+* <a href="http://git.mkukri.xyz/tnt">tnt</a>:
 Web directory discovery tool with multi-threading support
 * <a href="https://github.com/gusecurity/termsploit">termsploit</a>:
 C Library with optional Python bindings for exploiting interactive programs
-* <a href="https://github.com/kukrimate/s16emu">s16emu</a>:
+* <a href="http://git.mkukri.xyz/s16emu">s16emu</a>:
 Emulator and assembler for the <a href="https://jtod.github.io/home/Sigma16/">
 Sigma16</a> processor architecture
 
 ## x86_64 assembly
-* <a href="https://github.com/kukrimate/sha_asm">sha\_asm</a>:
+* <a href="http://git.mkukri.xyz/sha_asm">sha\_asm</a>:
 Semi-optimized SHA1 implementation
-* <a href="https://github.com/kukrimate/bfint">bfint</a>:
+* <a href="http://git.mkukri.xyz/bfint">bfint</a>:
 Interpreter for the <a href="https://esolangs.org/wiki/Brainfuck">Brainfuck</a>
 esoteric programming language
 
