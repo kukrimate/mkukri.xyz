@@ -26,6 +26,8 @@ C Library with optional Python bindings for exploiting interactive programs
 * <a href="http://git.mkukri.xyz/s16emu">s16emu</a>:
 Emulator and assembler for the <a href="https://jtod.github.io/home/Sigma16/">
 Sigma16</a> processor architecture
+* <a href="http://git.mkukri.xyz/bfjit">bfjit</a>:
+Optimizing JIT compiler for Brainfuck
 
 ## x86_64 assembly
 * <a href="http://git.mkukri.xyz/sha_asm">sha\_asm</a>:
