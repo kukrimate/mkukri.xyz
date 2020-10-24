@@ -26,8 +26,8 @@ template_post_small = read_file("src/templates/post_small.html")
 template_post_single= read_file("src/templates/post_single.html")
 
 import configparser
+import subprocess
 import datetime
-import markdown
 import os
 import re
 
@@ -41,7 +41,10 @@ def md_meta(s):
 
 # Get content from a md file
 def md_content(s):
-	return markdown.markdown(re.sub("\\<!--[\\s\\S]*--\\>", "", s))
+	proc = subprocess.run("./bin/md2html",
+		stdout=subprocess.PIPE,
+		input=re.sub("\\<!--[\\s\\S]*--\\>", "", s).encode())
+	return proc.stdout.decode()
 
 # Generate a page from a template and substitutions
 def template_gen(template, subs):

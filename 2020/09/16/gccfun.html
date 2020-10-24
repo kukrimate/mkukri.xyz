@@ -28,13 +28,11 @@
 		<p>Probably every programmer has used gcc at some point and it seems to work fine
 most of the time. However there are some insane design choices(?) made by the
 gcc developers that can waste your life. This article shows one of them that
-I happened to run into.</p>
-<p>I was working on an UEFI project, initially using a version of gcc built to
+I happened to run into.</p><p>I was working on an UEFI project, initially using a version of gcc built to
 target <code>x86_64-w64-mingw32</code>, life was good gcc built the code and my new
 hypervisor looked like it was hypervising. Then one day I had the crazy idea
 that UEFI is cool and all, but making this thing portable is probably a good
-idea.</p>
-<p>The first step I took to achieve my portability goals was rebuilding the
+idea.</p><p>The first step I took to achieve my portability goals was rebuilding the
 project using a SysV ABI ELF toolchain. I built gcc targeting <code>x86_64-elf</code>,
 than started porting. While the program internally now used the SysV ABI the
 final executable was still linked into PE32+ file to be run under UEFI. After
@@ -44,24 +42,22 @@ other oversights, I managed to build a binary to appeared to initially work.
 But a wierd new bug appeared out of nowhere, the processor started complaining
 that the VMCB (or Virtual Machine Control Block) was invalid. After spending
 two days quadruple checking the ABI I still wasn't able to make that error go
-away.</p>
-<p>Day 3 comes and I resort to single stepping my testing VM in gdb, this was when
+away.</p><p>Day 3 comes and I resort to single stepping my testing VM in gdb, this was when
 I discovered that to my horror that the offsets into my VMCB struct were
 different between the two compiler targets. Here is when I can hear the reader
 yelling the word "alingment", but the struct was marked as <code>__attribute__((packed))</code>
 all along. A few <code>offsetof</code> prints later I discovered that on the ELF
 compiler the offsets differed from the AMD manual. After bisecting the struct
-using more offsetofs I found that the struct definition was incorrect all along.</p>
-<p>But than how an incorrectly defined packed struct could possibly work just fine
+using more offsetofs I found that the struct definition was incorrect all along.</p><p>But than how an incorrectly defined packed struct could possibly work just fine
 and magically have the correct offsets on the MinGW compiler? Turns out to MSVC
 people the word packed doesn't mean a struct actually needs to be packed. And
 sadly the gcc developers decided it was great idea to copy MSVC's brain damage
 and enable by it default on MinGW target. I am sure the users of the two broken
 libraries out there that rely on this are really happy that they can use their
 broken struct definitions on MinGW without changes. But if you are expecting a
-sane compiler, I am afraid you are out of luck.</p>
-<p>Turns out the "magic" fix is specifying the <code>-mno-ms-bitfields</code> flag to gcc and
-the behaviour disappears. Brilliant....</p>
+sane compiler, I am afraid you are out of luck.</p><p>Turns out the "magic" fix is specifying the <code>-mno-ms-bitfields</code> flag to gcc and
+the behaviour disappears. Brilliant....
+</p>
 	</div>
 </body>
 </html>
