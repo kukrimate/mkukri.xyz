@@ -41,7 +41,7 @@ def md_meta(s):
 
 # Get content from a md file
 def md_content(s):
-	proc = subprocess.run("./bin/md2html",
+	proc = subprocess.run("./md2html/md2html",
 		stdout=subprocess.PIPE,
 		input=re.sub("\\<!--[\\s\\S]*--\\>", "", s).encode())
 	return proc.stdout.decode()
@@ -116,7 +116,7 @@ for page in pages:
 	if page in external:
 		continue
 
-	with open("src/%s.md" %page) as f:
+	with open("src/pages/%s.md" %page) as f:
 		page_md = f.read()
 
 	subs = md_meta(page_md)
