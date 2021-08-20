@@ -2,11 +2,11 @@
 # Blog generator script
 
 # Pages (determines navbar order)
-pages = [ "blog", "about", "projects", "git" ]
+pages = [ "blog", "about", "projects" ]
 
 # External links
 external = {
-	"git": "http://git.mkukri.xyz"
+        "projects": "https://git.mkukri.xyz/km",
 }
 
 # Index page
