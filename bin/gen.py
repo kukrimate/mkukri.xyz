@@ -6,7 +6,7 @@ pages = [ "blog", "about", "projects" ]
 
 # External links
 external = {
-        "projects": "https://git.mkukri.xyz/km",
+        "projects": "https://github.com/kukrimate",
 }
 
 # Index page
