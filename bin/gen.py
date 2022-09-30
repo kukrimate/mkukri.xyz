@@ -2,7 +2,7 @@
 # Blog generator script
 
 # Pages (determines navbar order)
-pages = [ "blog", "about", "projects" ]
+pages = [ "blog", "projects" ]
 
 # External links
 external = {
