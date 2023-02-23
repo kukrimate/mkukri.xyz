@@ -324,27 +324,27 @@ declarator(Type **out_head, Type ***out_tail, String *out_name)
         **out_tail = Type::Pointer;
         *out_tail = &amp;(***out_tail).base_type;
     } else {
-
-    if (maybe_want(TK_LPAREN)) {
-        declarator(out_head, out_tail, out_name);
-        want(TK_RPAREN);
-    } else {
-        want(TK_IDENTIFIER);
-    }
-
-    for (;;)
-        if (maybe_want(TK_LSQ)) {
-            let cnt = expr();
-            want(self, TK_RSQ);
-            **out_tail = Type::Array(cnt);
-            *out_tail = &amp;(***out_tail).elem_type;
-        } else if (maybe_want(TK_LPAREN)) {
-            let param_types = declaration_list();
-            want(self, TK_RPAREN);
-            **out_tail = Type::Function(param_types);
-            *out_tail = &amp;(***out_tail).elem_type;
+        if (maybe_want(TK_LPAREN)) {
+            declarator(out_head, out_tail, out_name);
+            want(TK_RPAREN);
         } else {
-            break;
+            want(TK_IDENTIFIER);
+        }
+    
+        for (;;) {
+            if (maybe_want(TK_LSQ)) {
+                let cnt = expr();
+                want(self, TK_RSQ);
+                **out_tail = Type::Array(cnt);
+                *out_tail = &amp;(***out_tail).elem_type;
+            } else if (maybe_want(TK_LPAREN)) {
+                let param_types = declaration_list();
+                want(self, TK_RPAREN);
+                **out_tail = Type::Function(param_types);
+                *out_tail = &amp;(***out_tail).elem_type;
+            } else {
+                break;
+            }
         }
     }
 }
