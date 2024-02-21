@@ -16,3 +16,11 @@ _birb_ on these parts, the full article describing this work is hosted on
 his blog: <a href="https://hacky.solutions/blog/2024/02/tpm-attack">link</a>
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/oY7tCZH2w60?si=qfCyHHxsrOyiiMYd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+Please note that while the demo above is shown using a modular TPM card,
+it is entirely possible to execute the same attack on a soldered TPM too:
+- on some systems it is rather trivial as the LPC bus reset does not reset
+  the CPU so it's just a matter of grounding the reset pin on the TPM
+- on other systems, grounding the reset pin on the TPM would reset the CPU,
+  so cutting the reset trace near the TPM is necessary
+
