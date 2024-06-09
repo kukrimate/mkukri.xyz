@@ -1,6 +1,6 @@
 * {
-	font-family: monospace;
-	font-size: 105%
+	font-family: sans-serif;
+	font-size: 100%
 }
 
 body {
@@ -81,13 +81,27 @@ div#post_timestamp {
 
 /* Code tags */
 code {
+	font-family: monospace;
+	font-size: 110%;
 	background: #e0e0e0;
-	font-size: 80%;
 	padding: 2px;
 }
 
 pre {
+	font-family: monospace;
 	background: #e0e0e0;
 	white-space:pre-wrap;
 	padding: 0.5em
+}
+
+/* Blockquote */
+blockquote {
+	background: #e0e0e0;
+	padding: 0.5em;
+	font-style: italic;
+}
+
+/* Spacing above content wrapper */
+div#content {
+	margin-top: 1em;
 }

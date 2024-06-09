@@ -16,7 +16,7 @@ unattended unlock TPM FDE schemes).
 
 ## Previous work
 
-We've previously demonstrated a trivial hardware attack <a href="https://hacky.solutions/blog/2024/02/tpm-attack">here</a>, that attack allowed an attacker with physical access to achieve
+We've previously demonstrated a trivial hardware attack $<a href="https://hacky.solutions/blog/2024/02/tpm-attack">here</a>$, that attack allowed an attacker with physical access to achieve
 a clean TPM state by booting any operating system, then briefly grounding the reset pin
 of a discrete TPM device with a pair of tweezers while the system was running.
 
@@ -54,7 +54,7 @@ mainbaord.
 
 A simple demonstration of the PCR values being cleared via software can be seen here:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ayDFTBeiqZA?si=Sq06T_6oxUky1wab" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+$<iframe width="560" height="315" src="https://www.youtube.com/embed/ayDFTBeiqZA?si=Sq06T_6oxUky1wab" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>$
 
 This can be used to attack TPM FDE schemes (such as BitLocker) in multiple ways, for example:
 
@@ -102,9 +102,9 @@ Intel rejected implementing any mitigation against this, arguing that they do no
 BootGuard at all, in their words:
 
 > As per architecture the Measured Boot mode attack is not a concern. We do have verified boot, in the sense that that the FW that can access the configuration is clearly in the TCB and it is absolutely verified (i.e. Intel authentic FW).
-
+>
 > On the other hand, the attack in question he have a concern with, starts by having physical access. In this particular case, I don’t think it is even relevant:
-
+>
 > If attacker have physical access, the discrete TPM is an attack surface anyway and even a known attack already. Attacker can use an interposer (just connect the TPM over a different crafted connector, very simple physical attack) and control whatever the TPM is storing regardless of FW intervention/compromise/reflashing. So the issue of the GPIO unlock is only applicable for SW only attack (no physical access).
 
 This is right in a strict sense (and is even minimizing the problem, as the tweezer attack is
@@ -135,7 +135,7 @@ This was weird considering that the author never mentioned MSI to Intel.
 
 After some back and forth, Intel said that this vulnerability may affect an
 unspecified set of OEM partners, and also said they will to inform their
-partners about it and reinforce their security.
+partners about it and reinforce their security guidance.
 
 A CVE wasn't assigned by Intel, and the author is unsure if Intel has actually
 informed any other party.

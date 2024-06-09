@@ -1,6 +1,6 @@
 <!--GEN_META
 GEN_TITLE=Techniques for parsing C declarators
-GEN_DESCRIPTION=
+GEN_DESCRIPTION=In this article I explain why parsing C declartors is rather difficult, and then describe a set of algorithms with different trade-offs to solve the problem.
 GEN_KEYWORDS=
 GEN_AUTHOR=Máté Kukri
 GEN_TIMESTAMP=2022-05-01 20:01

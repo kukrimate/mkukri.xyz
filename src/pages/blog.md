@@ -5,4 +5,3 @@ GEN_KEYWORDS=tech,cybersec,blog
 GEN_AUTHOR=Máté Kukri
 GEN_COPYRIGHT=Copyright (C) Máté Kukri, 2020
 -->
-# Blog

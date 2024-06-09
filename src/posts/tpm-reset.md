@@ -1,6 +1,6 @@
 <!--GEN_META
 GEN_TITLE=It's not just Bitlocker, all linux TPM encryption is broken too
-GEN_DESCRIPTION=We demonstrate a bypass of Linux TPM FDE
+GEN_DESCRIPTION=We demonstrate a bypass of Linux TPM FDE using a "tweezer reset attack"
 GEN_KEYWORDS=tpm,reset,fde
 GEN_AUTHOR=Mate Kukri,birb007
 GEN_TIMESTAMP=2024-02-15 23:08
@@ -13,9 +13,9 @@ believed the misconception that encrypted parameters save such designs.
 
 This research was done in collaboration with a good friend of mine known as
 _birb_ on these parts, the full article describing this work is hosted on
-his blog: <a href="https://hacky.solutions/blog/2024/02/tpm-attack">link</a>
+his blog: $<a href="https://hacky.solutions/blog/2024/02/tpm-attack">link</a>$
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/oY7tCZH2w60?si=qfCyHHxsrOyiiMYd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+$<iframe width="560" height="315" src="https://www.youtube.com/embed/oY7tCZH2w60?si=qfCyHHxsrOyiiMYd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>$
 
 Please note that while the demo above is shown using a modular TPM card,
 it is entirely possible to execute the same attack on a soldered TPM too:

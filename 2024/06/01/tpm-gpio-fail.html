@@ -59,9 +59,7 @@ This then allows the same software that did the GPIO write operation to derive a
 PCR values similar to the hardware attack, but this time without any physical access to pins on the
 mainbaord.</p>
 <p>A simple demonstration of the PCR values being cleared via software can be seen here:</p>
-<p><iframe width="560" height="315" src="https://www.youtube.com/embed/ayDFTBeiqZA?si=Sq06T_6oxUky1wab" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</p>
-<p>This can be used to attack TPM FDE schemes (such as BitLocker) in multiple ways, for example:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ayDFTBeiqZA?si=Sq06T_6oxUky1wab" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><p>This can be used to attack TPM FDE schemes (such as BitLocker) in multiple ways, for example:</p>
 <ul><li> an attacker with brief physical access to a device can plug in a USB stick, boot the device from
   it, then extract the disk encryption key and encrypted data without any access to device internals;</li><li> on a dual boot device, any operating system (including malware running inside any operating system)
   can access the encryption key and encrypted secrets stored on disk by other operating systems.</li></ul>
@@ -92,9 +90,7 @@ It was suggested to Intel, that as a mitigation against this variant, some pre-b
 component such as the Intel CSME could set the lock bit.</p>
 <p>Intel rejected implementing any mitigation against this, arguing that they do not consider this variant a vulnerability in
 BootGuard at all, in their words:</p>
-<blockquote> As per architecture the Measured Boot mode attack is not a concern. We do have verified boot, in the sense that that the FW that can access the configuration is clearly in the TCB and it is absolutely verified (i.e. Intel authentic FW).</blockquote>
-<blockquote> On the other hand, the attack in question he have a concern with, starts by having physical access. In this particular case, I don’t think it is even relevant:</blockquote>
-<blockquote> If attacker have physical access, the discrete TPM is an attack surface anyway and even a known attack already. Attacker can use an interposer (just connect the TPM over a different crafted connector, very simple physical attack) and control whatever the TPM is storing regardless of FW intervention/compromise/reflashing. So the issue of the GPIO unlock is only applicable for SW only attack (no physical access).</blockquote>
+<blockquote> As per architecture the Measured Boot mode attack is not a concern. We do have verified boot, in the sense that that the FW that can access the configuration is clearly in the TCB and it is absolutely verified (i.e. Intel authentic FW).<br/><br/> On the other hand, the attack in question he have a concern with, starts by having physical access. In this particular case, I don’t think it is even relevant:<br/><br/> If attacker have physical access, the discrete TPM is an attack surface anyway and even a known attack already. Attacker can use an interposer (just connect the TPM over a different crafted connector, very simple physical attack) and control whatever the TPM is storing regardless of FW intervention/compromise/reflashing. So the issue of the GPIO unlock is only applicable for SW only attack (no physical access).</blockquote>
 <p>This is right in a strict sense (and is even minimizing the problem, as the tweezer attack is
 much easier to do then invasive attacks such the interposer attack).
 For one time disk decryption, the tweezer attack is just as effective, and is arguably faster
@@ -115,7 +111,7 @@ includes guidance for OEMs on how and when to set the GPIO lock bits.</p>
 <p>This was weird considering that the author never mentioned MSI to Intel.</p>
 <p>After some back and forth, Intel said that this vulnerability may affect an
 unspecified set of OEM partners, and also said they will to inform their
-partners about it and re-inforce their security.</p>
+partners about it and reinforce their security guidance.</p>
 <p>A CVE wasn't assigned by Intel, and the author is unsure if Intel has actually
 informed any other party.</p>
 <p>A public disclosure date of 1st June was agreed on the 4th of April. This article is being

